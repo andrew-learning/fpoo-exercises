@@ -105,6 +105,12 @@ Converting a function that takes n arguments to one that takes n-m arguments, wh
 comp and partial are used for point-free function definitions.
 ( (comp str +) 8 8 8 )
 
+Chapter 10 That pesky nil
 
+The clojure.algo.monads library allows you to do stuff including nil checking (with-monad ... (domonad maybe-m
 
-	Up to 10.1 That pesky nil again
+A monad is a collection of functions that can be used to modify step-wise calculations.
+
+Above is the Maybe monad. A related monad, the Error monad, also stops the flow if something bad happens but in a more useful way. 
+
+Up to 10.2 Continuation-passing style
