@@ -39,7 +39,7 @@ The first element is inserted into the second, making a new element, which is in
 When the next element is a list, the previous element is inserted as its second element.
 
 Thus (-> 1 (- 2)) is the same as (- 1 2).
-When the next element is not a list it's converted to a single-element list whereupon the previous euls applies. This (-> 1 inc) becomes (inc 1).
+When the next element is not a list it's converted to a single-element list whereupon the previous rule applies. This (-> 1 inc) becomes (inc 1).
 
 
 - - - - - - - - - - - - - 
@@ -52,39 +52,59 @@ Converting a function that takes n arguments to one that takes n-m arguments, wh
 
 (def add3 (partial + 3))
 
-is called point-free (or parameter-free) because it doesn't mention any parameters.
+	is called point-free (or parameter-free) because it doesn't mention any parameters.
 
-Programming style options:
-1. naming neither the function nor the parameters
-2. naming the function, e.g. let-fn [strict-predicate (comp not not predict)]
-3. naming the parameters
-4. naming both
+	(fn [x] (+ 3 x)
+	The effect of making values hang around after the exit of the function to which they're pased is called closing over a value. A function that can close over external values is called a closure.
 
-Some people in the functional community seem to go for the tersest ossible solution. Don't do it.
+	(def increment-all (partial map inc))
+	(def incish (partial map + [100 200 300])) ; add 100 to first, 200 to second, ...
+
+	Higher-order functions: functions that either produce functions as results or consume function as arguments.
+
+	(def lift
+	  (fn [modifier]
+	    (fn [base-function]
+	      (fn [& args] (modifier (apply base-function args))))))
+	(def negate (lift -))
+	(def madoffize (lift partial * 1.05))
+
+	Programming style options:
+	1. naming neither the function nor the parameters
+	2. naming the function, e.g. let-fn [strict-predicate (comp not not predict)]
+	3. naming the parameters
+	4. naming both
+
+	Some people in the functional community seem to go for the tersest possible solution. Don't do it.
 
 
-Branching and Looping in Dataflow Style
+	Branching and Looping in Dataflow Style
 
-We have two notations for data flow style: the arrow and the let. An arrow flow looks like this:
+	We have two notations for data flow style: the arrow and the let. An arrow flow looks like this:
 
-(-> (+ 1 2) (* 3_ (+ 4))
+	(-> (+ 1 2) (* 3_ (+ 4))
 
-Each value must be used by the next step, and no step can use the value of any step other than its immediate predecessor.
+	Each value must be used by the next step, and no step can use the value of any step other than its immediate predecessor.
 
-Let relaxes those constraints. Since the value of a step is bound to a symbol, it can be accessed (or not) by any later step:
+	Let relaxes those constraints. Since the value of a step is bound to a symbol, it can be accessed (or not) by any later step:
 
-In both cases, there's no decision points in the flow. Arrows go where they go, and that's all there is to it. There's no way to change the direction of the flow depending on the value.
+	In both cases, there's no decision points in the flow. Arrows go where they go, and that's all there is to it. There's no way to change the direction of the flow depending on the value.
 
-That limitation can be overcome by imagination and the clever use of functions, though, as the rest of this chapter will show.
+	That limitation can be overcome by imagination and the clever use of functions, though, as the rest of this chapter will show.
 
-The desire to rid ourselves of explicit branching is not unique to functional programming. In object-oriented programming, polymorphic dispatch selects on of N methods according to both the message name and receiver type. That lets the programmer convert the idea behind code like this:
+	The desire to rid ourselves of explicit branching is not unique to functional programming. In object-oriented programming, polymorphic dispatch selects on of N methods according to both the message name and receiver type. That lets the programmer convert the idea behind code like this:
 
-if (some_property_of(x) {
-  perform_some_action();
-} else if some_other_property_of(x)) {
-  perform_some_other_action();
-} etc.
+	if (some_property_of(x) {
+	  perform_some_action();
+	} else if some_other_property_of(x)) {
+	  perform_some_other_action();
+	} etc.
 
-… into a more rigid (and so, very often more comprehensible) inheritance structure, where the muti-way if is hidden inside the normally-invisible dispatch function.
+	… into a more rigid (and so, very often more comprehensible) inheritance structure, where the muti-way if is hidden inside the normally-invisible dispatch function.
 
-Up to 10.1 That pesky nil again
+comp and partial are used for point-free function definitions.
+( (comp str +) 8 8 8 )
+
+
+
+	Up to 10.1 That pesky nil again
