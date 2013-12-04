@@ -1,0 +1,90 @@
+definitions
+
+messages are sent to receivers
+so a method is applied to the receiver and any arguments sent along with the message.
+Instances are created with constructors.
+
+Object orientation is really nothing more than some conventions for using data, conventions that are both supported and hidden by the language.
+
+An object is a clump of name->value mappings, some functions that take clumps as their first arguments (like Python's self), and a dispatch function that decides which function the programmer meant to call.
+
+In Clojure the map is the data structure of choice for connecting names to values.
+
+Elements of Functional Style
+
+- functions that create other functions. More narrowly, functions that take arguments that they use to parameterize the functions they create
+- the use of basic datatypes, notably maps, rather than the creation of classes. in the OO style you have many types. limiting the number of methods in a class is seen as a good thing. In the functional style you had tfew types and a larger number and variety of general-purpose functions that act on them.
+- trying to solve problems by setting up data that can be seen as flowing through functions. This involves abstracting away control flow, and also careful isolating code that might need to change state.
+
+Basic Datatypes that Flow through functions
+
+Instead of favouring a variety of data-dependent flows through an object graph, functional stele favours a single flow through a linear pipeline of cuntions. Each path might have its own specialised functions, but each will also make heavy used of generic map and sequence functions.
+
+The set function takes any sequence as an argument and converts it to a set, removing all duplicates in the process.
+
+A set is also callable. it's given a single value as an argument. 
+
+You can use filter and other sequence operations on sets, but the result is a sequence not a set.
+
+For that reason there's a select function that acts like filter but returns a set.
+
+(select odd #{1 2 3})
+
+There are techniques that avoid fragility, ably described in Freeman and Pryce's Growing Object Oriented Software Guided by Tetss.
+
+-> is better than using let.
+
+The first element is inserted into the second, making a new element, which is inserted into the third and so on.
+
+When the next element is a list, the previous element is inserted as its second element.
+
+Thus (-> 1 (- 2)) is the same as (- 1 2).
+When the next element is not a list it's converted to a single-element list whereupon the previous euls applies. This (-> 1 inc) becomes (inc 1).
+
+
+- - - - - - - - - - - - - 
+
+Chapter 9
+
+One way to eliminate duplication in functional programs is to not write functions yourself, but rather write functions that create parameterized functions.
+
+Converting a function that takes n arguments to one that takes n-m arguments, where the first m arguments become fixed as constants, is called partial application.
+
+(def add3 (partial + 3))
+
+is called point-free (or parameter-free) because it doesn't mention any parameters.
+
+Programming style options:
+1. naming neither the function nor the parameters
+2. naming the function, e.g. let-fn [strict-predicate (comp not not predict)]
+3. naming the parameters
+4. naming both
+
+Some people in the functional community seem to go for the tersest ossible solution. Don't do it.
+
+
+Branching and Looping in Dataflow Style
+
+We have two notations for data flow style: the arrow and the let. An arrow flow looks like this:
+
+(-> (+ 1 2) (* 3_ (+ 4))
+
+Each value must be used by the next step, and no step can use the value of any step other than its immediate predecessor.
+
+Let relaxes those constraints. Since the value of a step is bound to a symbol, it can be accessed (or not) by any later step:
+
+In both cases, there's no decision points in the flow. Arrows go where they go, and that's all there is to it. There's no way to change the direction of the flow depending on the value.
+
+That limitation can be overcome by imagination and the clever use of functions, though, as the rest of this chapter will show.
+
+The desire to rid ourselves of explicit branching is not unique to functional programming. In object-oriented programming, polymorphic dispatch selects on of N methods according to both the message name and receiver type. That lets the programmer convert the idea behind code like this:
+
+if (some_property_of(x) {
+  perform_some_action();
+} else if some_other_property_of(x)) {
+  perform_some_other_action();
+} etc.
+
+… into a more rigid (and so, very often more comprehensible) inheritance structure, where the muti-way if is hidden inside the normally-invisible dispatch function.
+
+Up to 10.1 That pesky nil again
